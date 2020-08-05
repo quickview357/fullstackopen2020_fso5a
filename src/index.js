@@ -1,38 +1,29 @@
-import React, { useState } from 'react'
+import React from 'react'
 import ReactDOM from 'react-dom'
+import App from './App'
 
-const App = () => {
-  const [ counter, setCounter ] = useState(0)
-
-  const increaseByOne = () => {
-    setCounter(counter + 1)
+const notes = [
+  {
+    id: 1,
+    content: 'HTML is easy',
+    date: '2020-01-10T17:30:31.098Z',
+    important: true
+  },
+  {
+    id: 2,
+    content: 'Browser can execute only Javascript',
+    date: '2020-01-10T18:39:34.091Z',
+    important: false
+  },
+  {
+    id: 3,
+    content: 'GET and POST are the most important methods of HTTP protocol',
+    date: '2020-01-10T19:20:14.298Z',
+    important: true
   }
-  
-  const setToZero = () => setCounter(0)
+]
 
-  const getParam = (event, a)=>{
-    console.log(event)
-    console.log(a);
-  }
-
-  return (
-    <div>
-      <div>{counter}</div>
-      <button onClick={increaseByOne}>
-        plus
-      </button>
-      <button onClick={setToZero}>
-        zero
-      </button>
-
-      <button onClick={(event)=>getParam(event, 123)}>
-        param
-      </button>
-
-    </div>
-  )
-}
 ReactDOM.render(
-  <App />, 
+  <App notes={notes} />,
   document.getElementById('root')
 )
