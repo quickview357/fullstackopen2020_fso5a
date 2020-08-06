@@ -5,7 +5,7 @@ import Note from './components/Note'
 const App = (props) => {
   const [notes, setNotes] = useState([])
   const [newNote, setNewNote] = useState('')
-  const [showAll, setShowAll] = useState(true)
+  //const [showAll, setShowAll] = useState(true)
 
   useEffect(() => {
     console.log('effect')
@@ -60,12 +60,28 @@ const App = (props) => {
       })    
   }
 
+  const toggleImportance = (id)=>{
+    console.log(`You have just set importance for note ${id}`);
+    //put data to server to edit
+    const note = notes.find(n => n.id === id)
+    const changeNote = {...note, important: !note.important}
+    axios
+      .put(`http://localhost:3001/notes/${id}`, changeNote)
+      .then(response => {
+        setNotes(notes.map(note => note.id !== id ? note : response.data)) 
+      })   
+  }
+
   return (
     <div>
       <h1>Notes</h1>
       <ul>
         {notes.map(note => 
-          <Note key={note.id} note={note} />
+          <Note 
+            key={note.id} 
+            note={note} 
+            toggleImportance = {() => toggleImportance(note.id)}
+            />
         )}
       </ul>
 
