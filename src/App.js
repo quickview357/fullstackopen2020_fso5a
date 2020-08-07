@@ -1,5 +1,5 @@
 import React, { useState, useEffect  } from 'react'
-import axios from 'axios'
+import noteService  from './services/note'
 import Note from './components/Note'
 
 const App = (props) => {
@@ -9,36 +9,45 @@ const App = (props) => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/notes')
-      .then(response => {
+    noteService
+      .getAll()
+      .then(initialNotes  => {
         console.log('promise fulfilled')
-        setNotes(response.data)
+        setNotes(initialNotes)
+      })
+      .catch(error => {
+        console.log(error)
+        alert(
+          "Could not load data"
+        )
       })
   }, [])
 
   console.log('render', notes.length, 'notes')
-
-
   const name = useFormInput('quang')
   const surname = useFormInput('ho')
 
   const addNote = (event)=>{
-    event.preventDefault()
-    
+    event.preventDefault()    
     const noteObject = {
       content: newNote,
       date: new Date().toISOString(),
       important: Math.random() < 0.5,
       id: notes.length + 1,
     }
-  
-    axios
-      .post('http://localhost:3001/notes', noteObject)
-      .then(response => {
-        setNotes(notes.concat(response.data))
+    noteService
+      .create(noteObject)
+      .then(returnedNote  => {
+        setNotes(notes.concat(returnedNote))
         setNewNote('')
-      })    
+      })
+      .catch(error => {
+        console.log(error)
+        alert(
+          "Could not load data"
+        )
+      })
+          
   }
   
   const handleNoteChange = (event)=> {
@@ -53,11 +62,17 @@ const App = (props) => {
       important: Math.random() < 0.5,
       id: notes.length + 1,
     }
-    axios
-      .post('http://localhost:3001/notes', noteObject)
-      .then(response => {
-        setNotes(notes.concat(response.data))        
-      })    
+    noteService
+      .create(noteObject)
+      .then(returnedNote  => {
+        setNotes(notes.concat(returnedNote))        
+      }) 
+      .catch(error => {
+        console.log(error)
+        alert(
+          "Could not load data"
+        )
+      })   
   }
 
   const toggleImportance = (id)=>{
@@ -65,10 +80,16 @@ const App = (props) => {
     //put data to server to edit
     const note = notes.find(n => n.id === id)
     const changeNote = {...note, important: !note.important}
-    axios
-      .put(`http://localhost:3001/notes/${id}`, changeNote)
-      .then(response => {
-        setNotes(notes.map(note => note.id !== id ? note : response.data)) 
+    noteService
+      .update(id, changeNote)
+      .then(returnedNote  => {
+        setNotes(notes.map(note => note.id !== id ? note : returnedNote)) 
+      })
+      .catch(error => {
+        alert(
+          `the note '${note.content}' was already deleted from server`
+        )
+        setNotes(notes.filter(n => n.id !== id))
       })   
   }
 
